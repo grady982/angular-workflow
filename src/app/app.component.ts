@@ -8,7 +8,7 @@ import Drawflow from 'drawflow'
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
-    title = 'angular-workflow-graph';
+    title = 'DrawFlow';
 
     editor?: Drawflow;
     mobile_last_move: any;
@@ -25,24 +25,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.editor = new Drawflow(this.drawflow.nativeElement);
         this.editor.reroute = true;
         this.editor.start();
-        // this.editor.editor_mode = 'edit';
-        // this.editor.zoom_max = 1.6;
-        // this.editor.zoom_min = 0.5;
-        // this.editor.zoom_value = 0.1;
 
         this.initEditorData();
         this.handleEditorEvent();
-
-        /* Mouse and Touch Actions */
-        const elements = document.getElementsByClassName('drag-drawflow');
-
-        console.log('elements', elements);
-
-        for (let i = 0; i < elements.length; i++) {
-            elements[i].addEventListener('touchend', this.drop, false);
-            elements[i].addEventListener('touchmove', this.positionMobile, false);
-            elements[i].addEventListener('touchstart', this.drag, false);
-        }
+        this.handleItemDragEvent();
     }
 
     initEditorData() {
@@ -73,6 +59,76 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         this.editor?.addConnection(1, 2, "output_1", "input_1");
         this.editor?.addConnection(1, 3, "output_1", "input_1");
+    }
+
+    handleEditorEvent() {
+        // Events!
+        this.editor?.on('nodeCreated', function (id) {
+            console.log("Node created " + id);
+        })
+
+        this.editor?.on('nodeRemoved', function (id) {
+            console.log("Node removed " + id);
+        })
+
+        this.editor?.on('nodeSelected', function (id) {
+            console.log("Node selected " + id);
+        })
+
+        this.editor?.on('moduleCreated', function (name) {
+            console.log("Module Created " + name);
+        })
+
+        this.editor?.on('moduleChanged', function (name) {
+            console.log("Module Changed " + name);
+        })
+
+        this.editor?.on('connectionCreated', function (connection) {
+            console.log('Connection created');
+            console.log(connection);
+        })
+
+        this.editor?.on('connectionRemoved', function (connection) {
+            console.log('Connection removed');
+            console.log(connection);
+        })
+
+        this.editor?.on('mouseMove', function (position) {
+            console.log('Position mouse x:' + position.x + ' y:' + position.y);
+        })
+
+        this.editor?.on('nodeMoved', function (id) {
+            console.log("Node moved " + id);
+        })
+
+        this.editor?.on('zoom', function (zoom) {
+            console.log('Zoom level ' + zoom);
+        })
+
+        this.editor?.on('translate', function (position) {
+            console.log('Translate x:' + position.x + ' y:' + position.y);
+        })
+
+        this.editor?.on('addReroute', function (id) {
+            console.log("Reroute added " + id);
+        })
+
+        this.editor?.on('removeReroute', function (id) {
+            console.log("Reroute removed " + id);
+        })
+    }
+
+    handleItemDragEvent() {
+        /* Mouse and Touch Actions */
+        const elements = document.getElementsByClassName('drag-drawflow');
+
+        console.log('elements', elements);
+
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].addEventListener('touchend', this.drop, false);
+            elements[i].addEventListener('touchmove', this.positionMobile, false);
+            elements[i].addEventListener('touchstart', this.drag, false);
+        }
     }
 
     positionMobile(ev: any) {
@@ -253,60 +309,5 @@ export class AppComponent implements OnInit, AfterViewInit {
         return true;
     }
 
-    handleEditorEvent() {
-        // Events!
-        this.editor?.on('nodeCreated', function (id) {
-            console.log("Node created " + id);
-        })
 
-        this.editor?.on('nodeRemoved', function (id) {
-            console.log("Node removed " + id);
-        })
-
-        this.editor?.on('nodeSelected', function (id) {
-            console.log("Node selected " + id);
-        })
-
-        this.editor?.on('moduleCreated', function (name) {
-            console.log("Module Created " + name);
-        })
-
-        this.editor?.on('moduleChanged', function (name) {
-            console.log("Module Changed " + name);
-        })
-
-        this.editor?.on('connectionCreated', function (connection) {
-            console.log('Connection created');
-            console.log(connection);
-        })
-
-        this.editor?.on('connectionRemoved', function (connection) {
-            console.log('Connection removed');
-            console.log(connection);
-        })
-
-        this.editor?.on('mouseMove', function (position) {
-            console.log('Position mouse x:' + position.x + ' y:' + position.y);
-        })
-
-        this.editor?.on('nodeMoved', function (id) {
-            console.log("Node moved " + id);
-        })
-
-        this.editor?.on('zoom', function (zoom) {
-            console.log('Zoom level ' + zoom);
-        })
-
-        this.editor?.on('translate', function (position) {
-            console.log('Translate x:' + position.x + ' y:' + position.y);
-        })
-
-        this.editor?.on('addReroute', function (id) {
-            console.log("Reroute added " + id);
-        })
-
-        this.editor?.on('removeReroute', function (id) {
-            console.log("Reroute removed " + id);
-        })
-    }
 }
