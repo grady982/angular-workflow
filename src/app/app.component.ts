@@ -243,6 +243,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         return true;
     }
 
+    allowDrop(ev: any) {
+        ev.preventDefault();
+    }
+
     drag(ev: any) {
         if (ev.type === "touchstart") {
             this.mobile_item_selec = ev.target.closest(".drag-drawflow").getAttribute('data-node');
