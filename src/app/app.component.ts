@@ -17,46 +17,53 @@ export class AppComponent implements OnInit, AfterViewInit {
     @ViewChild('drawflow', { static: true }) drawflow?: ElementRef;
 
     ngOnInit(): void {
-        /* Mouse and Touch Actions */
-        var elements = document.getElementsByClassName('drag-drawflow');
-        for (var i = 0; i < elements.length; i++) {
-            elements[i].addEventListener('touchend', this.drop, false);
-            elements[i].addEventListener('touchmove', this.positionMobile, false);
-            elements[i].addEventListener('touchstart', this.drag, false);
-        }
     }
 
     ngAfterViewInit(): void {
         if (!this.drawflow) return;
 
         this.editor = new Drawflow(this.drawflow.nativeElement);
-        this.editor.editor_mode = 'edit';
-
-        this.editor.zoom_max = 1.6;
-        this.editor.zoom_min = 0.5;
-        this.editor.zoom_value = 0.1;
-
+        this.editor.reroute = true;
         this.editor.start();
+        // this.editor.editor_mode = 'edit';
+        // this.editor.zoom_max = 1.6;
+        // this.editor.zoom_min = 0.5;
+        // this.editor.zoom_value = 0.1;
 
+        this.initEditorData();
+        this.handleEditorEvent();
+
+        /* Mouse and Touch Actions */
+        const elements = document.getElementsByClassName('drag-drawflow');
+
+        console.log('elements', elements);
+
+        for (let i = 0; i < elements.length; i++) {
+            elements[i].addEventListener('touchend', this.drop, false);
+            elements[i].addEventListener('touchmove', this.positionMobile, false);
+            elements[i].addEventListener('touchstart', this.drag, false);
+        }
+    }
+
+    initEditorData() {
         const data = {
             name: 'First Node'
         };
-
-        this.editor.addNode('foo', 1, 1, 100, 200, 'foo', data, `
+        this.editor?.addNode('foo', 1, 1, 100, 200, 'foo', data, `
             <div>
                 <div class="title-box">
                     <i class="fab fa-facebook"></i> 
                     FOO
                 </div>       
             </div> `, false);
-        this.editor.addNode('bar', 1, 1, 400, 100, 'bar', data, `
+        this.editor?.addNode('bar', 1, 1, 400, 100, 'bar', data, `
             <div>
                 <div class="title-box">
                     <i class="fab fa-facebook"></i> 
                     Bar A
                 </div>       
             </div> `, false);
-        this.editor.addNode('bar', 1, 1, 400, 300, 'bar', data, `
+        this.editor?.addNode('bar', 1, 1, 400, 300, 'bar', data, `
             <div>
                 <div class="title-box">
                     <i class="fab fa-facebook"></i> 
@@ -64,30 +71,33 @@ export class AppComponent implements OnInit, AfterViewInit {
                 </div>       
             </div> `, false);
 
-        this.editor.addConnection(1, 2, "output_1", "input_1");
-        this.editor.addConnection(1, 3, "output_1", "input_1");
+        this.editor?.addConnection(1, 2, "output_1", "input_1");
+        this.editor?.addConnection(1, 3, "output_1", "input_1");
     }
 
     positionMobile(ev: any) {
         this.mobile_last_move = ev;
     }
 
-    drop(ev: any) {
-        if (!this.mobile_last_move) return;
+    allowDrop(ev: any) {
+        ev.preventDefault();
+    }
 
-        if (ev.type === "touchend") {
-
-            var parentdrawflow = document.elementFromPoint(this.mobile_last_move.touches[0].clientX, this.mobile_last_move.touches[0].clientY)?.closest("#drawflow");
-            if (parentdrawflow != null) {
-                this.addNodeToDrawFlow(this.mobile_item_selec, this.mobile_last_move.touches[0].clientX, this.mobile_last_move.touches[0].clientY);
-            }
-            this.mobile_item_selec = '';
+    drag(ev: any) {
+        console.log('drag', ev);
+        if (ev.type === "touchstart") {
+            this.mobile_item_selec = ev.target.closest(".drag-drawflow").getAttribute('data-node');
         } else {
-            ev.preventDefault();
-            var data = ev.dataTransfer.getData("node");
-            this.addNodeToDrawFlow(data, ev.clientX, ev.clientY);
+            ev.dataTransfer.setData("node", ev.target.getAttribute('data-node'));
         }
+    }
 
+    drop(ev: any) {
+        console.log('on drop', ev);
+
+        ev.preventDefault();
+        const data = ev.dataTransfer.getData("node");
+        this.addNodeToDrawFlow(data, ev.clientX, ev.clientY);
     }
 
     addNodeToDrawFlow(name: string, pos_x: number, pos_y: number) {
@@ -243,16 +253,60 @@ export class AppComponent implements OnInit, AfterViewInit {
         return true;
     }
 
-    allowDrop(ev: any) {
-        ev.preventDefault();
-    }
+    handleEditorEvent() {
+        // Events!
+        this.editor?.on('nodeCreated', function (id) {
+            console.log("Node created " + id);
+        })
 
-    drag(ev: any) {
-        if (ev.type === "touchstart") {
-            this.mobile_item_selec = ev.target.closest(".drag-drawflow").getAttribute('data-node');
-        } else {
-            ev.dataTransfer.setData("node", ev.target.getAttribute('data-node'));
-        }
-    }
+        this.editor?.on('nodeRemoved', function (id) {
+            console.log("Node removed " + id);
+        })
 
+        this.editor?.on('nodeSelected', function (id) {
+            console.log("Node selected " + id);
+        })
+
+        this.editor?.on('moduleCreated', function (name) {
+            console.log("Module Created " + name);
+        })
+
+        this.editor?.on('moduleChanged', function (name) {
+            console.log("Module Changed " + name);
+        })
+
+        this.editor?.on('connectionCreated', function (connection) {
+            console.log('Connection created');
+            console.log(connection);
+        })
+
+        this.editor?.on('connectionRemoved', function (connection) {
+            console.log('Connection removed');
+            console.log(connection);
+        })
+
+        this.editor?.on('mouseMove', function (position) {
+            console.log('Position mouse x:' + position.x + ' y:' + position.y);
+        })
+
+        this.editor?.on('nodeMoved', function (id) {
+            console.log("Node moved " + id);
+        })
+
+        this.editor?.on('zoom', function (zoom) {
+            console.log('Zoom level ' + zoom);
+        })
+
+        this.editor?.on('translate', function (position) {
+            console.log('Translate x:' + position.x + ' y:' + position.y);
+        })
+
+        this.editor?.on('addReroute', function (id) {
+            console.log("Reroute added " + id);
+        })
+
+        this.editor?.on('removeReroute', function (id) {
+            console.log("Reroute removed " + id);
+        })
+    }
 }
