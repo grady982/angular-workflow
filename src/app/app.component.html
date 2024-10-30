@@ -40,6 +40,17 @@
             <i class="fas fa-mouse"></i><span> DBClick!</span>
         </div>
     </div>
-    <div #drawflow (drop)="drop($event)" (dragover)="allowDrop($event)"></div>
-    
+    <div>
+        <div #drawflow id="drawflow" (drop)="drop($event)" (dragover)="allowDrop($event)">
+            <div class="btn-lock">
+                <i class="fas fa-lock" [ngStyle]="{ display: unLock.display }" (click)="changeMode('unlock')"></i>
+                <i class="fas fa-lock-open" [ngStyle]="{ display: lock.display }" (click)="changeMode('lock')"></i>
+            </div>
+            <div class="bar-zoom">
+                <i class="fas fa-search-minus" (click)="editor?.zoom_out()"></i>
+                <i class="fas fa-search" (click)="editor?.zoom_reset()"></i>
+                <i class="fas fa-search-plus" (click)="editor?.zoom_in()"></i>
+            </div>
+        </div>
+    </div>
 </div>

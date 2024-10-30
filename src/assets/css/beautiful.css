@@ -79,11 +79,11 @@ header a {
 
 .menu ul li {
   display: inline-block;
-margin-left: 10px;
-border-right: 1px solid var(--border-color);
-padding-right: 10px;
-line-height: 40px;
-cursor: pointer;
+  margin-left: 10px;
+  border-right: 1px solid var(--border-color);
+  padding-right: 10px;
+  line-height: 40px;
+  cursor: pointer;
 }
 
 .menu ul li.selected {
@@ -161,7 +161,7 @@ cursor: pointer;
   padding-left: 0px;
 }
 
-.drawflow {
+#drawflow {
   position: relative;
   width: calc(100vw - 301px);
   height: calc(100% - 50px);
@@ -180,7 +180,7 @@ cursor: pointer;
   .col .drag-drawflow span {
     display:none;
   }
-  .drawflow {
+  #drawflow {
     width: calc(100vw - 51px);
   }
 }
